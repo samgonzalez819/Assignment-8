@@ -48,7 +48,7 @@ void inorder(const Treenode* root) {
 }
 
 //Function to delete the entire tree and free memory
-void deleteTree(const Treenode* root) {
+void deleteTree(Treenode* root) {
     if (root == nullptr)
         return;
 
@@ -162,3 +162,4 @@ int main() {
 
     return 0;
 }
+
