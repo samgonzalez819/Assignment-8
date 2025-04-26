@@ -1,0 +1,164 @@
+// Assigment 8: Data Structures
+// Name: Samantha Gonzalez
+// Date: 04/18/2025
+#include <iostream>
+using namespace std;
+
+//Define the tree node
+struct Treenode {
+    int key;
+    Treenode* left;
+    Treenode* right;
+
+    explicit Treenode(const int value) : key(value), left(nullptr), right(nullptr) {}
+};
+
+//Helper function to find a node with the given key
+Treenode* findNode(Treenode* root, const int key)
+{
+    if (root == nullptr || root->key == key)
+        return root;
+    if (key < root->key)
+        return findNode(root->left, key);
+    else
+        return findNode(root->right, key);
+}
+
+//Insert function
+Treenode* insert(Treenode* root, const int key)
+{
+    if (root == nullptr)
+        return new Treenode(key);
+
+    if (key < root->key)
+        root->left = insert(root->left, key);
+    else if (key > root->key)
+        root->right = insert(root->right, key);
+
+    return root;
+}
+
+//Display Output Function
+void inorder(const Treenode* root) {
+    if (root == nullptr)
+        return;
+    inorder(root->left);
+    cout << root->key << " ";
+    inorder(root->right);
+}
+
+//Function to delete the entire tree and free memory
+void deleteTree(const Treenode* root) {
+    if (root == nullptr)
+        return;
+
+    deleteTree(root->left);
+    deleteTree(root->right);
+    delete root;
+}
+
+//Left rotation around the given node key
+int leftrotation(const int nodeKey, Treenode*& Tree) {
+    Treenode* node = findNode(Tree, nodeKey);
+    if (node == nullptr || node->right == nullptr)
+        return -1;
+
+    Treenode* parent = Tree;
+    Treenode* parentOfNode = nullptr;
+
+    //Find parent of node
+    while (parent != nullptr && parent != node) {
+        parentOfNode = parent;
+        if (nodeKey < parent->key)
+            parent = parent->left;
+        else
+            parent = parent->right;
+    }
+
+    Treenode* newRoot = node->right;
+    node->right = newRoot->left;
+    newRoot->left = node;
+
+    if (parentOfNode == nullptr) {
+        Tree = newRoot;
+    } else if (parentOfNode->left == node) {
+        parentOfNode->left = newRoot;
+    } else {
+        parentOfNode->right = newRoot;
+    }
+
+    return newRoot->key;
+}
+
+//Right rotation around the given node key
+int Rightrotation(const int nodeKey, Treenode*& Tree) {
+    Treenode* node = findNode(Tree, nodeKey);
+    if (node == nullptr || node->left == nullptr)
+        return -1;
+
+    Treenode* parent = Tree;
+    Treenode* parentOfNode = nullptr;
+
+    //Find parent of node
+    while (parent != nullptr && parent != node) {
+        parentOfNode = parent;
+        if (nodeKey < parent->key)
+            parent = parent->left;
+        else
+            parent = parent->right;
+    }
+
+    Treenode* newRoot = node->left;
+    node->left = newRoot->right;
+    newRoot->right = node;
+
+    if (parentOfNode == nullptr) {
+        Tree = newRoot;
+    } else if (parentOfNode->left == node) {
+        parentOfNode->left = newRoot;
+    } else {
+        parentOfNode->right = newRoot;
+    }
+
+    return newRoot->key;
+}
+
+//Output
+int main() {
+    Treenode* root = nullptr;
+
+    //Tree
+    root = insert(root, 30);
+    root = insert(root, 25);
+    root = insert(root, 45);
+    root = insert(root, 35);
+    root = insert(root, 55);
+
+    cout << "Original Tree (Inorder): ";
+    inorder(root);
+    cout << endl;
+
+    //Left rotate at node 45
+    int newRootKey = leftrotation(45, root);
+    if (newRootKey != -1) {
+        cout << "After Left Rotation at node 45 (new subtree root: " << newRootKey << "): ";
+        inorder(root);
+        cout << endl;
+    } else {
+        cout << "Left rotation at node 45 failed." << endl;
+    }
+
+    //Right rotate at node 30
+    newRootKey = Rightrotation(30, root);
+    if (newRootKey != -1) {
+        cout << "After Right Rotation at node 30 (new subtree root: " << newRootKey << "): ";
+        inorder(root);
+        cout << endl;
+    } else {
+        cout << "Right rotation at node 30 failed." << endl;
+    }
+
+    deleteTree(root);
+
+    return 0;
+}
